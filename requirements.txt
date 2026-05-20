@@ -1,0 +1,19 @@
+# ─── Part A: EDA, Cleaning & Machine Learning ───────────────────────────────
+pandas
+numpy
+scikit-learn
+joblib
+matplotlib
+seaborn
+jupyter
+ 
+# ─── Part B: Kafka Streaming ─────────────────────────────────────────────────
+kafka-python
+ 
+# ─── Part C: Database ────────────────────────────────────────────────────────
+psycopg2-binary
+sqlalchemy
+ 
+# ─── Utilities ───────────────────────────────────────────────────────────────
+python-dotenv
+ 
