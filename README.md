@@ -354,28 +354,8 @@ The workshop explicitly requires storing the original Kafka message in `raw_happ
 
 Defined in `sql/create_tables.sql`. The schema follows a small star model with one raw table, one fact table, and two dimension tables.
 
-```
-raw_happiness_events          dim_country
-────────────────────          ───────────
-raw_event_id (PK)             country_id (PK)
-country                       country_name
-year
-gdp                           dim_date
-family                        ────────
-health                        date_id (PK)
-freedom                       year
-generosity
-corruption                    fact_predictions
-actual_happiness_score        ────────────────
-raw_message                   prediction_id (PK)
-processing_status             raw_event_id (FK) ──► raw_happiness_events
-received_at                   country_id   (FK) ──► dim_country
-                              date_id      (FK) ──► dim_date
-                              actual_score
-                              predicted_score
-                              prediction_error
-                              prediction_timestamp
-```
+<img width="998" height="684" alt="PBIDesktop_TwCNTMBvVz" src="https://github.com/user-attachments/assets/a451b2d3-de9d-4fb6-8d01-9a9aa1582674" />
+
 
 **Design decisions:**
 - `raw_happiness_events` stores every Kafka event exactly as received, with a `processing_status` field for pipeline monitoring.
@@ -397,6 +377,8 @@ This guarantees that every prediction in `fact_predictions` can always be traced
 ---
 
 ### Step 9 — Dashboard and KPIs
+
+<img width="1429" height="802" alt="PBIDesktop_FfOJPR3PQZ" src="https://github.com/user-attachments/assets/d5d670ea-ff90-4f66-89e5-34c31ee7a8e1" />
 
 The dashboard connects directly to PostgreSQL and queries `fact_predictions` joined with the dimension tables. It does **not** read from CSV files.
 
@@ -472,6 +454,8 @@ pip install -r requirements.txt
 ```
 
 ### 2. Place raw data files
+
+Download the CSV files from [Kaggle](https://www.kaggle.com/datasets/unsdsn/world-happiness)
 
 Copy the five CSV files into `data/raw/`:
 ```
