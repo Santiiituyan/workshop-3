@@ -39,8 +39,6 @@ data/streaming/
 
 # ─── Models ───────────────────────────────────────────────────────
 # Serialized models are large binary files — regenerate with main.py
-models/model.pkl
-models/scaler.pkl
 
 # ─── Docker ───────────────────────────────────────────────────────
 # Postgres persistent volume data
