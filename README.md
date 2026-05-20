@@ -6,23 +6,36 @@
 ---
 
 ## Table of Contents
-1. [Project Description](#1-project-description)
-2. [General Architecture](#2-general-architecture)
-3. [Folder Structure](#3-folder-structure)
-4. [Part A — Data Profiling and Machine Learning](#4-part-a--data-profiling-and-machine-learning)
-   - [Step 1 — Exploratory Data Analysis](#step-1--exploratory-data-analysis)
-   - [Step 2 — Data Cleaning and Harmonization](#step-2--data-cleaning-and-harmonization)
-   - [Step 3 — Feature Engineering](#step-3--feature-engineering)
-   - [Step 4 — Model Training and Selection](#step-4--model-training-and-selection)
-5. [Part B — Streaming ETL with Apache Kafka](#5-part-b--streaming-etl-with-apache-kafka)
-   - [Step 5 — Kafka Producer](#step-5--kafka-producer)
-   - [Step 6 — Kafka Consumer](#step-6--kafka-consumer)
-6. [Part C — Prediction Storage and Analytics](#6-part-c--prediction-storage-and-analytics)
-   - [Step 7 — Database Design](#step-7--database-design)
-   - [Step 8 — Load Raw Events and Prediction Results](#step-8--load-raw-events-and-prediction-results)
-   - [Step 9 — Dashboard and KPIs](#step-9--dashboard-and-kpis)
-7. [Execution Instructions](#7-execution-instructions)
-8. [Technical Requirements](#8-technical-requirements)
+- [Streaming ETL with Apache Kafka and Machine Learning](#streaming-etl-with-apache-kafka-and-machine-learning)
+  - [Table of Contents](#table-of-contents)
+  - [1. Project Description](#1-project-description)
+  - [2. General Architecture](#2-general-architecture)
+  - [3. Folder Structure](#3-folder-structure)
+  - [4. Part A — Data Profiling and Machine Learning](#4-part-a--data-profiling-and-machine-learning)
+    - [Step 1 — Exploratory Data Analysis](#step-1--exploratory-data-analysis)
+    - [Step 2 — Data Cleaning and Harmonization](#step-2--data-cleaning-and-harmonization)
+    - [Step 3 — Feature Engineering](#step-3--feature-engineering)
+    - [Step 4 — Model Training and Selection](#step-4--model-training-and-selection)
+  - [5. Part B — Streaming ETL with Apache Kafka](#5-part-b--streaming-etl-with-apache-kafka)
+    - [Step 5 — Kafka Producer](#step-5--kafka-producer)
+    - [Step 6 — Kafka Consumer](#step-6--kafka-consumer)
+  - [6. Part C — Prediction Storage and Analytics](#6-part-c--prediction-storage-and-analytics)
+    - [Step 7 — Database Design](#step-7--database-design)
+    - [Step 8 — Load Raw Events and Prediction Results](#step-8--load-raw-events-and-prediction-results)
+    - [Step 9 — Dashboard and KPIs](#step-9--dashboard-and-kpis)
+  - [7. Execution Instructions](#7-execution-instructions)
+    - [Prerequisites](#prerequisites)
+    - [1. Clone and set up environment](#1-clone-and-set-up-environment)
+    - [2. Place raw data files](#2-place-raw-data-files)
+    - [3. Run the offline ETL pipeline](#3-run-the-offline-etl-pipeline)
+    - [4. Start infrastructure](#4-start-infrastructure)
+    - [5. Run the streaming pipeline](#5-run-the-streaming-pipeline)
+    - [6. Connect the dashboard](#6-connect-the-dashboard)
+    - [KPI 1 — Average Prediction Error](#kpi-1--average-prediction-error)
+    - [KPI 2 — Total Predictions and Average Score by Country](#kpi-2--total-predictions-and-average-score-by-country)
+    - [KPI 3 — Actual Score vs Predicted Score](#kpi-3--actual-score-vs-predicted-score)
+    - [KPI 4 — Average Actual Score vs Average Predicted Score by Year](#kpi-4--average-actual-score-vs-average-predicted-score-by-year)
+  - [8. Technical Requirements](#8-technical-requirements)
 
 ---
 
@@ -495,6 +508,44 @@ Password : etl_pass
 Use the queries in `sql/kpis.sql` as data sources for each KPI visualization.
 
 ---
+
+### KPI 1 — Average Prediction Error
+
+**Visual:** Card (single metric)  
+**Value:** `0.22`  
+**Query:** `SELECT ROUND(AVG(prediction_error)::NUMERIC, 4) FROM fact_predictions`
+
+The global average absolute error across all 782 predictions is **0.22 points** on the happiness score scale (0–10). This means the model's predictions deviate from the actual scores by 0.22 points on average, which is consistent with the RMSE of 0.52 obtained during training on the test set. The difference is expected since the dashboard aggregates all years including the training set records.
+
+---
+
+### KPI 2 — Total Predictions and Average Score by Country
+
+**Visual:** Map (bubble map with country coordinates)  
+**Query:** `COUNT(*)` and `AVG(predicted_score)` grouped by `dim_country.country_name`
+
+Each bubble on the map represents a country. Bubble size reflects the number of predictions recorded for that country across all years (2015–2019). Countries with data across all five years appear with larger bubbles. The map provides a geographic overview of coverage and allows identifying regional happiness patterns — Northern Europe and Oceania consistently show higher predicted scores, while Sub-Saharan Africa shows lower values.
+
+---
+
+### KPI 3 — Actual Score vs Predicted Score
+
+**Visual:** Scatter plot  
+**Query:** `actual_score` and `predicted_score` per prediction from `fact_predictions`
+
+Each point represents one prediction. The dashed diagonal line represents perfect prediction (predicted = actual). Points close to the diagonal indicate accurate predictions. The scatter plot shows that the model performs well across the full score range (approximately 2.5 to 8.0), with slightly higher dispersion in the mid-range scores (4.0–6.0), which is consistent with the RandomForestRegressor's behavior on the test set (R²=0.780). No systematic over- or under-prediction bias is visible.
+
+---
+
+### KPI 4 — Average Actual Score vs Average Predicted Score by Year
+
+**Visual:** Line and bar combo chart  
+**Query:** `AVG(actual_score)`, `AVG(predicted_score)`, and `AVG(prediction_error)` grouped by `dim_date.year`
+
+The chart shows three series over the years 2015–2019:
+- **Blue line** — average actual happiness score per year
+- **Orange dotted line** — average predicted happiness score per year
+- **Red bars** — average prediction error per year
 
 ## 8. Technical Requirements
 
