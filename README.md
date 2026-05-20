@@ -23,6 +23,10 @@
     - [Step 7 — Database Design](#step-7--database-design)
     - [Step 8 — Load Raw Events and Prediction Results](#step-8--load-raw-events-and-prediction-results)
     - [Step 9 — Dashboard and KPIs](#step-9--dashboard-and-kpis)
+    - [KPI 1 — Average Prediction Error](#kpi-1--average-prediction-error)
+    - [KPI 2 — Total Predictions and Average Score by Country](#kpi-2--total-predictions-and-average-score-by-country)
+    - [KPI 3 — Actual Score vs Predicted Score](#kpi-3--actual-score-vs-predicted-score)
+    - [KPI 4 — Average Actual Score vs Average Predicted Score by Year](#kpi-4--average-actual-score-vs-average-predicted-score-by-year)
   - [7. Execution Instructions](#7-execution-instructions)
     - [Prerequisites](#prerequisites)
     - [1. Clone and set up environment](#1-clone-and-set-up-environment)
@@ -31,10 +35,6 @@
     - [4. Start infrastructure](#4-start-infrastructure)
     - [5. Run the streaming pipeline](#5-run-the-streaming-pipeline)
     - [6. Connect the dashboard](#6-connect-the-dashboard)
-    - [KPI 1 — Average Prediction Error](#kpi-1--average-prediction-error)
-    - [KPI 2 — Total Predictions and Average Score by Country](#kpi-2--total-predictions-and-average-score-by-country)
-    - [KPI 3 — Actual Score vs Predicted Score](#kpi-3--actual-score-vs-predicted-score)
-    - [KPI 4 — Average Actual Score vs Average Predicted Score by Year](#kpi-4--average-actual-score-vs-average-predicted-score-by-year)
   - [8. Technical Requirements](#8-technical-requirements)
 
 ---
@@ -413,6 +413,44 @@ KPI queries are defined in `sql/kpis.sql`.
 
 ---
 
+### KPI 1 — Average Prediction Error
+
+**Visual:** Card (single metric)  
+**Value:** `0.22`  
+**Query:** `SELECT ROUND(AVG(prediction_error)::NUMERIC, 4) FROM fact_predictions`
+
+The global average absolute error across all 782 predictions is **0.22 points** on the happiness score scale (0–10). This means the model's predictions deviate from the actual scores by 0.22 points on average, which is consistent with the RMSE of 0.52 obtained during training on the test set. The difference is expected since the dashboard aggregates all years including the training set records.
+
+---
+
+### KPI 2 — Total Predictions and Average Score by Country
+
+**Visual:** Map (bubble map with country coordinates)  
+**Query:** `COUNT(*)` and `AVG(predicted_score)` grouped by `dim_country.country_name`
+
+Each bubble on the map represents a country. Bubble size reflects the number of predictions recorded for that country across all years (2015–2019). Countries with data across all five years appear with larger bubbles. The map provides a geographic overview of coverage and allows identifying regional happiness patterns — Northern Europe and Oceania consistently show higher predicted scores, while Sub-Saharan Africa shows lower values.
+
+---
+
+### KPI 3 — Actual Score vs Predicted Score
+
+**Visual:** Scatter plot  
+**Query:** `actual_score` and `predicted_score` per prediction from `fact_predictions`
+
+Each point represents one prediction. The dashed diagonal line represents perfect prediction (predicted = actual). Points close to the diagonal indicate accurate predictions. The scatter plot shows that the model performs well across the full score range (approximately 2.5 to 8.0), with slightly higher dispersion in the mid-range scores (4.0–6.0), which is consistent with the RandomForestRegressor's behavior on the test set (R²=0.780). No systematic over- or under-prediction bias is visible.
+
+---
+
+### KPI 4 — Average Actual Score vs Average Predicted Score by Year
+
+**Visual:** Line and bar combo chart  
+**Query:** `AVG(actual_score)`, `AVG(predicted_score)`, and `AVG(prediction_error)` grouped by `dim_date.year`
+
+The chart shows three series over the years 2015–2019:
+- **Blue line** — average actual happiness score per year
+- **Orange dotted line** — average predicted happiness score per year
+- **Red bars** — average prediction error per year
+
 ## 7. Execution Instructions
 
 ### Prerequisites
@@ -508,44 +546,6 @@ Password : etl_pass
 Use the queries in `sql/kpis.sql` as data sources for each KPI visualization.
 
 ---
-
-### KPI 1 — Average Prediction Error
-
-**Visual:** Card (single metric)  
-**Value:** `0.22`  
-**Query:** `SELECT ROUND(AVG(prediction_error)::NUMERIC, 4) FROM fact_predictions`
-
-The global average absolute error across all 782 predictions is **0.22 points** on the happiness score scale (0–10). This means the model's predictions deviate from the actual scores by 0.22 points on average, which is consistent with the RMSE of 0.52 obtained during training on the test set. The difference is expected since the dashboard aggregates all years including the training set records.
-
----
-
-### KPI 2 — Total Predictions and Average Score by Country
-
-**Visual:** Map (bubble map with country coordinates)  
-**Query:** `COUNT(*)` and `AVG(predicted_score)` grouped by `dim_country.country_name`
-
-Each bubble on the map represents a country. Bubble size reflects the number of predictions recorded for that country across all years (2015–2019). Countries with data across all five years appear with larger bubbles. The map provides a geographic overview of coverage and allows identifying regional happiness patterns — Northern Europe and Oceania consistently show higher predicted scores, while Sub-Saharan Africa shows lower values.
-
----
-
-### KPI 3 — Actual Score vs Predicted Score
-
-**Visual:** Scatter plot  
-**Query:** `actual_score` and `predicted_score` per prediction from `fact_predictions`
-
-Each point represents one prediction. The dashed diagonal line represents perfect prediction (predicted = actual). Points close to the diagonal indicate accurate predictions. The scatter plot shows that the model performs well across the full score range (approximately 2.5 to 8.0), with slightly higher dispersion in the mid-range scores (4.0–6.0), which is consistent with the RandomForestRegressor's behavior on the test set (R²=0.780). No systematic over- or under-prediction bias is visible.
-
----
-
-### KPI 4 — Average Actual Score vs Average Predicted Score by Year
-
-**Visual:** Line and bar combo chart  
-**Query:** `AVG(actual_score)`, `AVG(predicted_score)`, and `AVG(prediction_error)` grouped by `dim_date.year`
-
-The chart shows three series over the years 2015–2019:
-- **Blue line** — average actual happiness score per year
-- **Orange dotted line** — average predicted happiness score per year
-- **Red bars** — average prediction error per year
 
 ## 8. Technical Requirements
 
