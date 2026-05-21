@@ -1,4 +1,10 @@
 # Streaming ETL with Apache Kafka and Machine Learning
+---
+![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![Airflow](https://img.shields.io/badge/Apache-Kafka-red.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-green.svg)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)
+---
 **Course:** ETL (G01) — Workshop 3  
 **Program:** Data Engineering and Artificial Intelligence  
 **Universidad Autónoma de Occidente**
