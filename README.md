@@ -543,3 +543,31 @@ Use the queries in `sql/kpis.sql` as data sources for each KPI visualization.
 | Infrastructure | Docker, Docker Compose |
 | Visualization | Power BI / Looker Studio / Tableau |
 | Notebook | Jupyter |
+
+---
+
+## 👥 Contributors
+
+**Santiago Ituyan Figueroa** - Data Engineer  
+[LinkedIn](https://www.linkedin.com/in/santiago-ituyan-a3274613a/) | [GitHub](https://github.com/santiiituyan)
+
+---
+
+## 🙏 Acknowledgments
+
+- **Universidad Autónoma de Occidente** - ETL Course
+- **Kaggle** - Dataset source
+- **World Happiness Report** - Historical data
+- **Apache Kafka Community** - Documentation and support
+
+---
+
+## 📞 Contact
+
+For questions or collaboration opportunities:
+- Email: santiago.ituyan@uao.edu.co
+- LinkedIn: [My Profile](https://www.linkedin.com/in/santiago-ituyan-a3274613a/)
+
+---
+
+**⭐ If you found this project helpful, please give it a star!**
